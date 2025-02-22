@@ -14,10 +14,8 @@ class RefreshTokenInterceptor extends Interceptor {
   final Dio _dio;
   final KeyValueStorageService keyValueStorageService;
 
-  RefreshTokenInterceptor(
-    this.keyValueStorageService, {
-    required Dio dioClient,
-  }) : _dio = dioClient;
+  RefreshTokenInterceptor(this.keyValueStorageService, {required Dio dioClient})
+    : _dio = dioClient;
 
   /// The name of the exception on which this interceptor is triggered.
   // ignore: non_constant_identifier_names
@@ -75,7 +73,7 @@ class RefreshTokenInterceptor extends Interceptor {
           cancelToken: dioError.requestOptions.cancelToken,
           options: Options(
             headers: <String, Object?>{
-              'Authorization': 'Bearer ${newToken.$1}'
+              'Authorization': 'Bearer ${newToken.$1}',
             },
           ),
         );
@@ -122,7 +120,7 @@ class RefreshTokenInterceptor extends Interceptor {
         debugPrint('<-- END REFRESH');
         return (
           response.data?['access_token'] as String,
-          response.data?['refresh_token'] as String
+          response.data?['refresh_token'] as String,
         );
       } else {
         throw Exception(response.data?['headers']['message']);

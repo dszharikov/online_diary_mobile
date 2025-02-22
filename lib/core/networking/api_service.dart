@@ -48,7 +48,7 @@ class ApiService implements ApiInterface {
     // CachePolicy? cachePolicy,
     int? cacheAgeDays,
     bool requiresAuthToken = true,
-    required T Function(JSON responseBody) converter,
+    required T Function(JSON responseBody) converter
   }) async {
     try {
       // Entire map of response

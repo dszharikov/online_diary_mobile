@@ -42,9 +42,9 @@ class ApiInterceptor extends Interceptor {
     if (options.extra.containsKey('requiresAuthToken')) {
       if (options.extra['requiresAuthToken'] == true) {
         final token = await keyValueStorageService.getAccessToken();
-        options.headers.addAll(
-          <String, Object?>{'Authorization': 'Bearer $token'},
-        );
+        options.headers.addAll(<String, Object?>{
+          'Authorization': 'Bearer $token',
+        });
       }
 
       options.extra.remove('requiresAuthToken');
@@ -78,20 +78,14 @@ class ApiInterceptor extends Interceptor {
   /// - [handler.reject]/[super.onError], if you want to fail the response
   /// with your custom [DioException].
   @override
-  void onResponse(
-    Response response,
-    ResponseInterceptorHandler handler,
-  ) {
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
     final success = response.statusCode == 200;
 
     if (success) return handler.next(response);
 
     //Reject all error codes from server except 401 and 200 OK
     return handler.reject(
-      DioException(
-        requestOptions: response.requestOptions,
-        response: response,
-      ),
+      DioException(requestOptions: response.requestOptions, response: response),
     );
   }
 }
