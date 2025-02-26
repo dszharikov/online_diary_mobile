@@ -9,12 +9,15 @@ class KeyValueStorageService {
   /// The name of auth token key
   static const _refreshTokenKey = 'refreshToken';
 
+  /// The name of user prefs key
+  static const _userPrefsKey = 'userPrefs';
+
   /// Instance of key-value storage base class
   final _keyValueStorage = KeyValueStorageBase()..clearCommon();
 
   /// Returns last authentication token
-  Future<String> getAccessToken() async {
-    return await _keyValueStorage.getEncrypted(_authTokenKey) ?? '';
+  Future<String?> getAccessToken() async {
+    return await _keyValueStorage.getEncrypted(_authTokenKey);
   }
 
   /// Sets the authentication token to this value. Even though this method is
@@ -36,7 +39,13 @@ class KeyValueStorageService {
     _keyValueStorage.setEncrypted(_refreshTokenKey, token);
   }
 
+  String? getUserPrefs() {
+    return _keyValueStorage.getCommon<String>(_userPrefsKey);
+  }
 
+  void setUserPrefs(String json) {
+    _keyValueStorage.setCommon<String>(_userPrefsKey, json);
+  }
 
   /// Resets the authentication. Even though these methods are asynchronous, we
   /// don't care about their completion which is why we don't use `await` and

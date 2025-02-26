@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 // Config
 // import '../../config/config.dart';
 
-
 /// A utility class for getting paths for API endpoints.
 /// This class has no constructor and all methods are `static`.
 @immutable
@@ -31,11 +30,19 @@ class ApiEndpoint {
         return '$baseUrl/auth/token';
     }
   }
+
+  static String schools(SchoolsEndpoint endpoint) {
+    switch (endpoint) {
+      case SchoolsEndpoint.GET_ALL:
+        return '$baseUrl/schools/get-all';
+    }
+  }
 }
 
 /// A collection of endpoints used for authentication purposes.
 enum AuthEndpoint {
-
   /// An endpoint for token requests.
   TOKEN,
 }
+
+enum SchoolsEndpoint { GET_ALL }

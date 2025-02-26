@@ -6,16 +6,11 @@ class ResponseModel<T> {
   final _ResponseHeadersModel headers;
   final T body;
 
-  const ResponseModel({
-    required this.headers,
-    required this.body,
-  });
+  const ResponseModel({required this.headers, required this.body});
 
   factory ResponseModel.fromJson(JSON json) {
     return ResponseModel(
-      headers: _ResponseHeadersModel.fromJson(
-        json['headers'] as JSON,
-      ),
+      headers: _ResponseHeadersModel.fromJson(json['headers'] as JSON),
       body: json['body'] as T,
     );
   }

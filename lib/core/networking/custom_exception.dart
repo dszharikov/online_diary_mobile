@@ -50,8 +50,8 @@ class CustomException implements Exception {
     int? statusCode,
     required this.message,
     this.exceptionType = _ExceptionType.ApiException,
-  })  : statusCode = statusCode ?? 500,
-        name = exceptionType.name;
+  }) : statusCode = statusCode ?? 500,
+       name = exceptionType.name;
 
   factory CustomException.fromDioException(Exception error) {
     try {
@@ -83,7 +83,8 @@ class CustomException implements Exception {
             );
           case DioExceptionType.connectionError:
           default:
-            if (error.message != null && error.message!.contains(_ExceptionType.SocketException.name)) {
+            if (error.message != null &&
+                error.message!.contains(_ExceptionType.SocketException.name)) {
               return CustomException(
                 exceptionType: _ExceptionType.FetchDataException,
                 statusCode: error.response?.statusCode,

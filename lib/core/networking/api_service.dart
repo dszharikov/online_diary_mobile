@@ -48,7 +48,7 @@ class ApiService implements ApiInterface {
     // CachePolicy? cachePolicy,
     int? cacheAgeDays,
     bool requiresAuthToken = true,
-    required T Function(JSON responseBody) converter
+    required T Function(JSON responseBody) converter,
   }) async {
     try {
       // Entire map of response
@@ -61,9 +61,7 @@ class ApiService implements ApiInterface {
         //       : null,
         // ),
         options: Options(
-          extra: <String, Object?>{
-            'requiresAuthToken': requiresAuthToken,
-          },
+          extra: <String, Object?>{'requiresAuthToken': requiresAuthToken},
         ),
         queryParams: queryParams,
         cancelToken: cancelToken,
@@ -115,9 +113,7 @@ class ApiService implements ApiInterface {
         //       : null,
         // ),
         options: Options(
-          extra: <String, Object?>{
-            'requiresAuthToken': requiresAuthToken,
-          },
+          extra: <String, Object?>{'requiresAuthToken': requiresAuthToken},
         ),
         cancelToken: cancelToken,
       );
@@ -158,9 +154,7 @@ class ApiService implements ApiInterface {
         endpoint: endpoint,
         data: data,
         options: Options(
-          extra: <String, Object?>{
-            'requiresAuthToken': requiresAuthToken,
-          },
+          extra: <String, Object?>{'requiresAuthToken': requiresAuthToken},
         ),
         cancelToken: cancelToken,
       );
@@ -194,16 +188,13 @@ class ApiService implements ApiInterface {
     bool requiresAuthToken = true,
     required T Function(JSON response) converter,
   }) async {
-
     try {
       // Entire map of response
       final response = await _dioService.patch<JSON>(
         endpoint: endpoint,
         data: data,
         options: Options(
-          extra: <String, Object?>{
-            'requiresAuthToken': requiresAuthToken,
-          },
+          extra: <String, Object?>{'requiresAuthToken': requiresAuthToken},
         ),
         cancelToken: cancelToken,
       );
@@ -237,16 +228,13 @@ class ApiService implements ApiInterface {
     bool requiresAuthToken = true,
     required T Function(JSON response) converter,
   }) async {
-
     try {
       // Entire map of response
       final response = await _dioService.delete<JSON>(
         endpoint: endpoint,
         data: data,
         options: Options(
-          extra: <String, Object?>{
-            'requiresAuthToken': requiresAuthToken,
-          },
+          extra: <String, Object?>{'requiresAuthToken': requiresAuthToken},
         ),
         cancelToken: cancelToken,
       );
@@ -257,22 +245,20 @@ class ApiService implements ApiInterface {
   }
 
   @override
-  Future<T> putData<T>(
-      {required String endpoint,
-      required JSON data,
-      CancelToken? cancelToken,
-      bool requiresAuthToken = true,
-      required T Function(JSON response) converter,}) async {
-
+  Future<T> putData<T>({
+    required String endpoint,
+    required JSON data,
+    CancelToken? cancelToken,
+    bool requiresAuthToken = true,
+    required T Function(JSON response) converter,
+  }) async {
     try {
       // Entire map of response
       final response = await _dioService.put<JSON>(
         endpoint: endpoint,
         data: data,
         options: Options(
-          extra: <String, Object?>{
-            'requiresAuthToken': requiresAuthToken,
-          },
+          extra: <String, Object?>{'requiresAuthToken': requiresAuthToken},
         ),
         cancelToken: cancelToken,
       );

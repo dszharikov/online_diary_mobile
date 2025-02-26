@@ -119,10 +119,7 @@ class Shadows {
   const Shadows._();
 
   static const List<BoxShadow> universal = [
-    BoxShadow(
-      color: Color.fromRGBO(51, 51, 51, 0.15),
-      blurRadius: 10,
-    ),
+    BoxShadow(color: Color.fromRGBO(51, 51, 51, 0.15), blurRadius: 10),
   ];
 
   static const elevated = <BoxShadow>[

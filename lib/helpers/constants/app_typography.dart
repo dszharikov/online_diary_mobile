@@ -48,14 +48,8 @@ class AppTypography {
       fontSize: 16,
       fontWeight: FontWeight.bold,
     ),
-    body16: _outfitFont.copyWith(
-      color: AppColors.textBlackColor,
-      fontSize: 16,
-    ),
-    body14: _outfitFont.copyWith(
-      color: AppColors.textBlackColor,
-      fontSize: 14,
-    ),
+    body16: _outfitFont.copyWith(color: AppColors.textBlackColor, fontSize: 16),
+    body14: _outfitFont.copyWith(color: AppColors.textBlackColor, fontSize: 14),
     subtitle13: _outfitFont.copyWith(
       color: AppColors.textBlackColor,
       fontSize: 13,

@@ -76,7 +76,7 @@ class KeyValueStorageBase {
         return _sharedPrefs!.setBool(key, value as bool);
       case double:
         return _sharedPrefs!.setDouble(key, value as double);
-      case const(List<String>):
+      case const (List<String>):
         return _sharedPrefs!.setStringList(key, value as List<String>);
       default:
         return _sharedPrefs!.setString(key, value as String);

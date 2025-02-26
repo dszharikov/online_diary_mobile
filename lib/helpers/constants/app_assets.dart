@@ -23,13 +23,13 @@ class AppAssets {
 
   /// The path for the laugh icon
   static const String laughIcon = 'assets/images/laugh-emoji.png';
-  
+
   /// The path for the wow icon
   static const String wowIcon = 'assets/images/wow-emoji.png';
 
   /// The path for the sad icon
   static const String sadIcon = 'assets/images/sad-emoji.png';
-  
+
   /// The path for the angry icon
   static const String angryIcon = 'assets/images/angry-emoji.png';
 
@@ -41,10 +41,10 @@ class AppAssets {
 
   /// The path for the like icon
   static const String likeIcon = 'assets/images/like.png';
-  
+
   /// The path for the outlined like icon
   static const String likeOutlinedIcon = 'assets/images/like-outlined.png';
-  
+
   /// The path for the hangout icon
   static const String hangoutIcon = 'assets/images/hangout.png';
 }

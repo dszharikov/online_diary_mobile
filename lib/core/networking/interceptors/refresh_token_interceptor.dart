@@ -1,6 +1,9 @@
 // ignore_for_file: deprecated_member_use
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:online_diary_mobile/features/common/auth/repositories/auth_repository.dart';
 
 // Helpers
 import '../../../helpers/typedefs.dart';
@@ -13,6 +16,7 @@ class RefreshTokenInterceptor extends Interceptor {
   /// An instance of [Dio] for network requests
   final Dio _dio;
   final KeyValueStorageService keyValueStorageService;
+  StreamController<AuthStatus>? authController;
 
   RefreshTokenInterceptor(this.keyValueStorageService, {required Dio dioClient})
     : _dio = dioClient;
@@ -44,7 +48,6 @@ class RefreshTokenInterceptor extends Interceptor {
       if (dioError.response!.statusCode == 401) {
         final tokenDio = Dio()..options = _dio.options;
 
-        // _dio.lock();
         // Get auth details for refresh token request
         final data = {
           'grand_type': 'refresh_token',
@@ -140,11 +143,10 @@ class RefreshTokenInterceptor extends Interceptor {
       debugPrint('\t<-- END ERROR');
       debugPrint('<-- END REFRESH');
 
+      if (authController != null) {
+        authController!.add(AuthStatus.unauthenticated());
+      }
       return null;
-    } finally {
-      // _dio
-      //   ..unlock()
-      //   ..clear();
     }
   }
 }

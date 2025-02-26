@@ -33,8 +33,8 @@ class DioService {
     // this.globalCacheOptions,
     Iterable<Interceptor>? interceptors,
     HttpClientAdapter? httpClientAdapter,
-  })  : _dio = dioClient,
-        _cancelToken = CancelToken() {
+  }) : _dio = dioClient,
+       _cancelToken = CancelToken() {
     if (interceptors != null) _dio.interceptors.addAll(interceptors);
     if (httpClientAdapter != null) _dio.httpClientAdapter = httpClientAdapter;
   }

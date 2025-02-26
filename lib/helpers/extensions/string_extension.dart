@@ -1,6 +1,5 @@
 // ignore_for_file: unnecessary_this
 
-
 // Helpers
 import '../constants/app_utils.dart' show Regexes;
 
