@@ -23,11 +23,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     return emit.onEach(
       _authRepository.status,
       onData: (status) async {
-        if (status.isAuthenticated) {
+        if (status.isInitial) {
+          return;
+        } else if (status.isAuthenticated) {
           return emit(Authenticated(status.role!));
         } else {
+          emit(Unauthenticated());
           _authRepository.logOut();
-          return emit(Unauthenticated());
+          return;
         }
       },
       onError: addError,
@@ -36,5 +39,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _onLogoutPressed(AuthLogoutPressed event, Emitter<AuthState> emit) {
     _authRepository.logOut();
+    emit(Unauthenticated());
   }
 }

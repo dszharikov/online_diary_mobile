@@ -11,6 +11,7 @@ class LoginRemoteDataSource {
     return api.getCollectionData<School>(
       endpoint: ApiEndpoint.schools(SchoolsEndpoint.GET_ALL),
       converter: School.fromMap,
+      requiresAuthToken: false,
     );
   }
 }

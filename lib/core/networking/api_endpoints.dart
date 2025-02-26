@@ -21,7 +21,7 @@ class ApiEndpoint {
   /// ```
   /// flutter run --dart-define=BASE_URL=www.some_url.com
   /// ```
-  static const baseUrl = 'http://dev-api.tilmidi.ma/api/v2';
+  static const baseUrl = 'https://dev-api.tilmidi.ma/api/v2';
 
   /// Returns the path for an authentication [endpoint].
   static String auth(AuthEndpoint endpoint) {

@@ -10,9 +10,9 @@ import 'package:online_diary_mobile/features/common/auth/data/sources/auth_remot
 class AuthStatus {
   String? role;
   bool isAuthenticated;
+  bool isInitial = false;
 
-  AuthStatus.unknown() : isAuthenticated = false;
-  // TODO: remake it
+  AuthStatus.unknown() : isAuthenticated = false, isInitial = true;
   AuthStatus.authenticated({required this.role}) : isAuthenticated = true;
   AuthStatus.unauthenticated() : isAuthenticated = false;
 }
@@ -64,7 +64,6 @@ class AuthRepository {
 
   void logOut() {
     localDataSource.deleteTokens();
-    controller.add(AuthStatus.unauthenticated());
   }
 
   Future<Either<Failure, AuthorizationResult>> checkTokenValidity() async {

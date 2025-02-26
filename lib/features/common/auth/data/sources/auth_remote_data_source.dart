@@ -19,23 +19,20 @@ class AuthRemoteDataSource {
       'password': password,
       'school_id': schoolId,
     };
-
     final response = await dio.post<JSON>(
       ApiEndpoint.auth(AuthEndpoint.TOKEN),
       data: data,
       options: Options(
-        headers: <String, Object?>{
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      ),
+        contentType: Headers.formUrlEncodedContentType,
+      ), // application/x-www-form-urlencoded
     );
-    // Check new token success
+
     final success = response.statusCode == 200;
 
     if (success) {
       return AuthorizationResult.fromMap(response.data!);
     } else {
-      throw Exception('Unsuccessed refresh token');
+      throw Exception('Unsuccessed login');
     }
   }
 

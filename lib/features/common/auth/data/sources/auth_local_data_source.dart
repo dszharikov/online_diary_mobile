@@ -22,6 +22,6 @@ class AuthLocalDataSource {
   }
 
   Future<void> deleteTokens() async {
-    keyValueStorageService.resetKeys();
+    // keyValueStorageService.resetTokens();
   }
 }

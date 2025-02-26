@@ -3,7 +3,7 @@ import 'package:online_diary_mobile/features/common/settings/data/sources/settin
 
 abstract class SettingsRepository {
   /// Получаем сохранённые настройки (возвращаем null, если ничего нет)
-  Future<UserPrefs?> getUserSettings();
+  UserPrefs? getUserSettings();
 
   /// Получить текущее значение тёмной темы
   Future<bool> getDarkThemeEnabled();
@@ -18,7 +18,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   SettingsRepositoryImpl({required this.localDataSource});
 
   @override
-  Future<UserPrefs?> getUserSettings() async {
+  UserPrefs? getUserSettings() {
     return localDataSource.getUserPrefs();
   }
 

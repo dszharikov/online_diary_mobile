@@ -13,7 +13,7 @@ class KeyValueStorageService {
   static const _userPrefsKey = 'userPrefs';
 
   /// Instance of key-value storage base class
-  final _keyValueStorage = KeyValueStorageBase()..clearCommon();
+  final _keyValueStorage = KeyValueStorageBase();
 
   /// Returns last authentication token
   Future<String?> getAccessToken() async {
@@ -40,7 +40,8 @@ class KeyValueStorageService {
   }
 
   String? getUserPrefs() {
-    return _keyValueStorage.getCommon<String>(_userPrefsKey);
+    var result = _keyValueStorage.getCommon<String>(_userPrefsKey);
+    return result;
   }
 
   void setUserPrefs(String json) {
@@ -54,5 +55,9 @@ class KeyValueStorageService {
     _keyValueStorage
       ..clearCommon()
       ..clearEncrypted();
+  }
+
+  void resetTokens() {
+    _keyValueStorage.clearEncrypted();
   }
 }

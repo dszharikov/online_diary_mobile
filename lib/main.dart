@@ -1,33 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:online_diary_mobile/features/common/auth/bloc/auth_bloc.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:online_diary_mobile/service_locator.dart';
-import 'service_locator.dart' as di;
 
-// Блоки / Темы
+import 'package:online_diary_mobile/service_locator.dart' as di;
+import 'package:online_diary_mobile/service_locator.dart';
+
+// Тема
+import 'package:online_diary_mobile/theme/material_theme.dart';
+
+// Наши заглушки-страницы
+import 'features/common/auth/auth.dart';
+import 'features/common/login/login.dart';
 import 'features/common/settings/settings.dart';
-import 'theme/material_theme.dart';
+import 'features/director/home/home.dart';
+import 'features/student/home/home.dart';
+import 'features/teacher/home/home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
 
+  // 1. Инициализация зависимостей
   await di.setupLocator();
 
+  // 2. Запускаем приложение с EasyLocalization + Bloc’ами
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('fr'), Locale('ar')],
-      path: "assets/translations",
+      path: 'assets/translations',
       saveLocale: true,
       child: MultiBlocProvider(
         providers: [
-          // Поднимаем SettingsBloc
+          // SettingsBloc для темы
           BlocProvider<SettingsBloc>(
             create: (context) => sl<SettingsBloc>()..add(SettingsStarted()),
           ),
-          // Поднимаем AuthBloc
+          // AuthBloc для управления авторизацией
           BlocProvider<AuthBloc>(
             create:
                 (context) => sl<AuthBloc>()..add(AuthSubscriptionRequested()),
@@ -44,78 +52,47 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Получаем ссылку на наш кастомный класс темы
+    // Готовим Light/Dark темы
     final myMaterialTheme = MaterialTheme(ThemeData().textTheme);
     final ThemeData myLightTheme = myMaterialTheme.light();
     final ThemeData myDarkTheme = myMaterialTheme.dark();
 
-    // Оборачиваем MaterialApp в BlocBuilder<SettingsBloc, SettingsState>,
-    // чтобы при смене темы/локали происходил rebuild.
+    // 3. Слушаем SettingsBloc, чтобы установить тему
     return BlocBuilder<SettingsBloc, SettingsState>(
       builder: (context, settingsState) {
         return MaterialApp(
-          title: 'Flutter Demo',
+          title: 'Online Diary',
+
+          // 3.1 Настраиваем локализацию
           localizationsDelegates: context.localizationDelegates,
           supportedLocales: context.supportedLocales,
           locale: context.locale,
 
+          // Начальный маршрут (может быть '/splash', '/login' и т.д.)
+          initialRoute: '/splash',
+
+          // Словарь именованных маршрутов
+          routes: {
+            '/splash': (context) => const SplashPage(),
+            '/login': (context) => const LoginPage(),
+            '/student/home': (context) => const StudentMainPage(),
+            '/teacher/home': (context) => const TeacherMainPage(),
+            '/director/home': (context) => const DirectorMainPage(),
+            // Можно добавить и другие...
+          },
+
+          // 3.2 Темы
           theme: myLightTheme,
           darkTheme: myDarkTheme,
-
-          // Если isDarkMode == true -> ThemeMode.dark, иначе ThemeMode.light
           themeMode:
               settingsState.isDarkMode ? ThemeMode.dark : ThemeMode.light,
 
-          home: const MyHomePage(title: 'Flutter Demo Home Page'),
+          // 4. Организуем навигацию:
+          //    - Начальный экран: SplashPage
+          //    - Затем в BlocListener<AuthBloc> (ниже) обрабатываем переходы
+          home: SplashPage(),
         );
       },
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-// Пример экрана
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("title".tr())),
-      body: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                // Пример: меняем локаль на арабский
-                context.setLocale(const Locale("ar"));
-              },
-              child: const Text("Arabe"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Пример: меняем локаль на французский
-                context.setLocale(const Locale("fr"));
-              },
-              child: const Text("Francais"),
-            ),
-            const SizedBox(width: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Пример: переключаем тёмную/светлую тему
-                context.read<SettingsBloc>().add(SettingsThemeToggled());
-              },
-              child: const Text("Toggle Theme"),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

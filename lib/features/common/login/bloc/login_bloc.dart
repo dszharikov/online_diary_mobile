@@ -86,10 +86,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
 
     // 2) Проверить валидацию полей (школа, username, password)
-    if (state.selectedSchoolId == null || state.selectedSchoolId!.isEmpty) {
-      emit(state.copyWith(errorMessage: 'School not selected'));
-      return;
-    }
+    // if (state.selectedSchoolId == null || state.selectedSchoolId!.isEmpty) {
+    //   emit(state.copyWith(errorMessage: 'School not selected'));
+    //   return;
+    // }
+    // TODO: Uncomment the above code and remove the below code
+    var schoolId = '01JFQ1RPZRD46S3S4XY5KE7EM2';
     if (state.username.isEmpty) {
       emit(state.copyWith(errorMessage: 'Username is empty'));
       return;
@@ -102,7 +104,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(state.copyWith(isLoading: true, errorMessage: null));
     // 3) Отправляем запрос на логин
     final result = await authRepository.logIn(
-      schoolId: state.selectedSchoolId!,
+      // schoolId: state.selectedSchoolId!,
+      schoolId: schoolId,
       username: state.username,
       password: state.password,
     );

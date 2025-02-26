@@ -1,38 +1,52 @@
+// splash_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/auth_bloc.dart';
+import '../../../director/home/home.dart';
+import '../../../student/home/home.dart';
+import '../../../teacher/home/home.dart';
+import '../../login/login.dart';
+import '../auth.dart';
 
-class SplashPage extends StatefulWidget {
+class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
 
   @override
-  State<SplashPage> createState() => _SplashPageState();
-}
-
-class _SplashPageState extends State<SplashPage> {
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is Authenticated) {
-            final role = state.role;
-            if (role == 'student') {
-              Navigator.pushReplacementNamed(context, '/student');
-            } else if (role == 'teacher') {
-              Navigator.pushReplacementNamed(context, '/teacher');
-            } else if (role == 'director') {
-              Navigator.pushReplacementNamed(context, '/director');
-            } else {
-              // неведомая роль — отправим на логин
-              Navigator.pushReplacementNamed(context, '/login');
-            }
-          } else if (state is Unauthenticated) {
-            Navigator.pushReplacementNamed(context, '/login');
-          }
-        },
-        child: const Center(child: CircularProgressIndicator()),
+    // Здесь можно ничего не делать, так как AuthBloc уже «сам» инициировал проверку.
+    // Просто отображаем индикатор загрузки, пока не придёт AuthState -> Authenticated / Unauthenticated.
+    return BlocListener<AuthBloc, AuthState>(
+      listenWhen: (previous, current) => previous != current,
+      listener: (context, state) {
+        // Если не авторизован -> Переходим на LoginPage
+        if (state is Authenticated) {
+          // Смотрим на роль
+          final role = state.role;
+
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/$role/home',
+            (route) => false,
+          );
+        } else {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/login',
+            (route) => false,
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Splash Page')),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              Text("Loading.. Please wait", style: TextStyle(fontSize: 20)),
+            ],
+          ),
+        ),
       ),
     );
   }
