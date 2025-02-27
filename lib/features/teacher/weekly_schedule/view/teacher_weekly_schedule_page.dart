@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:online_diary_mobile/service_locator.dart';
+import 'package:flutter_slidable/flutter_slidable.dart'; // <-- импорт для Slidable
+import 'package:online_diary_mobile/features/teacher/weekly_schedule/data/models/lesson_model.dart';
+
 import '../bloc/teacher_weekly_schedule_bloc.dart';
-import '../../../teacher/weekly_schedule/data/models/lesson_model.dart';
+import '../../../../service_locator.dart'; // например, для sl<...>()
 
 class TeacherWeeklySchedulePage extends StatelessWidget {
   const TeacherWeeklySchedulePage({super.key});
@@ -11,15 +13,23 @@ class TeacherWeeklySchedulePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<TeacherWeeklyScheduleBloc>(
       create: (context) {
-        final bloc = // Берём из DI (get_it) или создаём вручную
-            sl<TeacherWeeklyScheduleBloc>()..add(
-              LoadWeeklyScheduleEvent(
-                // начальная дата - понедельник текущей недели
-                DateTime.now().subtract(
-                  Duration(days: DateTime.now().weekday - 1),
-                ),
-              ),
-            );
+        final bloc = sl<TeacherWeeklyScheduleBloc>();
+        // Получим «понедельник 00:00» текущей недели
+        final now = DateTime.now();
+        final monday = DateTime(
+          now.year,
+          now.month,
+          now.day - (now.weekday - 1),
+        );
+        final mondayAtMidnight = DateTime(
+          monday.year,
+          monday.month,
+          monday.day,
+          0,
+          0,
+          0,
+        );
+        bloc.add(LoadWeeklyScheduleEvent(mondayAtMidnight));
         return bloc;
       },
       child: const _TeacherWeeklyScheduleView(),
@@ -32,40 +42,25 @@ class _TeacherWeeklyScheduleView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Scaffold(
       appBar: AppBar(title: const Text('WeeklySchedule')),
       body: BlocBuilder<TeacherWeeklyScheduleBloc, TeacherWeeklyScheduleState>(
         builder: (context, state) {
-          // верхний блок: переключатель дней недели (горизонтальный)
-          final dayHeader = _DayOfWeekHeader(state: state);
-
           if (state.isLoading && state.weeklyLessons.isEmpty) {
-            return Column(
-              children: [
-                dayHeader,
-                const Expanded(
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-              ],
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           final lessons = state.weeklyLessons[state.selectedDayIndex] ?? [];
-
           return Column(
             children: [
-              dayHeader,
-              // Список уроков
+              _DayOfWeekHeader(state: state),
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: lessons.length,
                   itemBuilder: (context, index) {
                     final lesson = lessons[index];
-                    return _LessonCard(lesson: lesson);
+                    return _LessonSlidable(lesson: lesson);
                   },
                 ),
               ),
@@ -77,7 +72,7 @@ class _TeacherWeeklyScheduleView extends StatelessWidget {
   }
 }
 
-/// Виджет для отображения горизонтального списка дней + стрелки
+/// Горизонтальный список дней + стрелки (как в предыдущем примере)
 class _DayOfWeekHeader extends StatelessWidget {
   final TeacherWeeklyScheduleState state;
   const _DayOfWeekHeader({required this.state});
@@ -85,15 +80,13 @@ class _DayOfWeekHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<TeacherWeeklyScheduleBloc>();
-    final colorScheme = Theme.of(context).colorScheme;
 
     final weekStart = state.currentStartDate;
-    // Создадим список DateTime на 7 дней
     final days = List.generate(7, (i) => weekStart.add(Duration(days: i)));
 
     return Container(
-      color: colorScheme.surfaceVariant.withOpacity(0.2),
       height: 80,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Row(
         children: [
           IconButton(
@@ -114,42 +107,20 @@ class _DayOfWeekHeader extends StatelessWidget {
                   onTap: () => bloc.add(SelectDayOfWeekEvent(index)),
                   child: Container(
                     width: 60,
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 8,
-                    ),
+                    margin: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
                       color:
                           isSelected
-                              ? colorScheme.primaryContainer
+                              ? Theme.of(context).colorScheme.primaryContainer
                               : Colors.transparent,
-                      borderRadius: BorderRadius.circular(8),
                     ),
                     alignment: Alignment.center,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          _weekdayString(day.weekday),
-                          style: TextStyle(
-                            color:
-                                isSelected
-                                    ? colorScheme.onPrimaryContainer
-                                    : colorScheme.onSurface,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${day.day}',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color:
-                                isSelected
-                                    ? colorScheme.onPrimaryContainer
-                                    : colorScheme.onSurface,
-                          ),
-                        ),
+                        Text(_weekdayString(day.weekday)),
+                        Text('${day.day}'),
                       ],
                     ),
                   ),
@@ -184,16 +155,15 @@ class _DayOfWeekHeader extends StatelessWidget {
         return 'Sam';
       case 7:
         return 'Dim';
-      default:
-        return '';
     }
+    return '';
   }
 }
 
-/// Карточка урока (слайд / свайп для отмены)
-class _LessonCard extends StatelessWidget {
+/// Виджет Slidable (два действия: "Annuler/Restaurer" и "Modifier")
+class _LessonSlidable extends StatelessWidget {
   final LessonModel lesson;
-  const _LessonCard({required this.lesson});
+  const _LessonSlidable({required this.lesson});
 
   @override
   Widget build(BuildContext context) {
@@ -201,126 +171,274 @@ class _LessonCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    // Свайп влево = показать иконку отмены
-    return Dismissible(
+    // Определяем иконку / название / цвет для удаления или восстановления
+    final isActive = lesson.isActive;
+    final actionColor =
+        isActive ? colorScheme.errorContainer : Colors.green[400];
+    final icon = isActive ? Icons.delete : Icons.restore;
+    final label = isActive ? 'Annuler' : 'Restaurer';
+
+    return Slidable(
       key: ValueKey(lesson.lessonId),
-      direction: DismissDirection.endToStart, // left to right for ltr
-      confirmDismiss: (dir) async {
-        // Покажем диалог: "Вы уверены, что хотите отменить?"
-        final result = await showDialog<bool>(
-          context: context,
-          builder:
-              (ctx) => AlertDialog(
-                title: const Text('Annuler ce cours?'),
-                content: const Text('Voulez-vous vraiment annuler ce cours?'),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(ctx, false),
-                    child: const Text('Non'),
+      endActionPane: ActionPane(
+        motion: const ScrollMotion(),
+        children: [
+          SlidableAction(
+            onPressed: (ctx) async {
+              // Подтверждение
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (dialogCtx) {
+                  return AlertDialog(
+                    title: Text(
+                      isActive ? 'Annuler ce cours?' : 'Rétablir ce cours?',
+                    ),
+                    content: Text(
+                      isActive
+                          ? 'Voulez-vous vraiment annuler ce cours?'
+                          : 'Voulez-vous vraiment rétablir ce cours?',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(dialogCtx, false),
+                        child: const Text('Non'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(dialogCtx, true),
+                        child: const Text('Oui'),
+                      ),
+                    ],
+                  );
+                },
+              );
+              if (confirm == true) {
+                bloc.add(UpdateLessonActivityEvent(lessonId: lesson.lessonId));
+              }
+            },
+            backgroundColor: actionColor!,
+            foregroundColor: colorScheme.onErrorContainer,
+            icon: icon,
+            label: label,
+          ),
+          SlidableAction(
+            onPressed: (ctx) async {
+              // Открываем диалог для редактирования (theme, homework, description)
+              final updated = await _showEditLessonDialog(context, lesson);
+              if (updated != null) {
+                // updated - это { 'theme':..., 'homework':..., 'description':... }
+                bloc.add(
+                  UpdateLessonInfoEvent(
+                    lessonId: lesson.lessonId,
+                    theme: updated['theme'],
+                    homework: updated['homework'],
+                    description: updated['description'],
                   ),
-                  TextButton(
-                    onPressed: () => Navigator.pop(ctx, true),
-                    child: const Text('Oui'),
-                  ),
-                ],
-              ),
-        );
-        if (result == true) {
-          bloc.add(UpdateLessonActivityEvent(lessonId: lesson.lessonId));
-        }
-        return false; // Не удаляем из списка локально, пусть BLoC сам обновит
-      },
-      background: Container(
-        color: colorScheme.errorContainer,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Icon(Icons.delete, color: colorScheme.onErrorContainer),
+                );
+              }
+            },
+            backgroundColor: colorScheme.primaryContainer,
+            foregroundColor: colorScheme.onPrimaryContainer,
+            icon: Icons.edit,
+            label: 'Modifier',
+          ),
+        ],
       ),
-      child: _buildLessonContent(context, lesson),
+      child: _LessonCard(lesson: lesson),
     );
   }
 
-  Widget _buildLessonContent(BuildContext context, LessonModel lesson) {
-    final isInactive = !lesson.isActive;
+  /// Показываем диалог с 3 полями: theme, homework, description
+  Future<Map<String, String>?> _showEditLessonDialog(
+    BuildContext context,
+    LessonModel lesson,
+  ) async {
+    final themeController = TextEditingController(text: lesson.theme ?? '');
+    final homeworkController = TextEditingController(
+      text: lesson.homework ?? '',
+    );
+    final descriptionController = TextEditingController(
+      text: lesson.description ?? '',
+    );
+
+    final result = await showDialog<Map<String, String>>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text('Modifier le cours'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: themeController,
+                  decoration: const InputDecoration(labelText: 'Thème'),
+                ),
+                TextField(
+                  controller: homeworkController,
+                  decoration: const InputDecoration(labelText: 'Devoir'),
+                ),
+                TextField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(labelText: 'Description'),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Annuler'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx, {
+                  'theme': themeController.text,
+                  'homework': homeworkController.text,
+                  'description': descriptionController.text,
+                });
+              },
+              child: const Text('Confirmer'),
+            ),
+          ],
+        );
+      },
+    );
+    return result;
+  }
+}
+
+/// Собственно карточка урока с текстом, временем, homework и т.д.
+class _LessonCard extends StatelessWidget {
+  final LessonModel lesson;
+  const _LessonCard({required this.lesson});
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final textColor =
-        isInactive
-            ? theme.colorScheme.onSurfaceVariant.withOpacity(0.6)
-            : theme.colorScheme.onSurface;
-
-    final textStyle = theme.textTheme.bodyMedium?.copyWith(color: textColor);
-
-    // Зачеркнутый стиль, если is_active=false
+    final isInactive = !lesson.isActive;
     final textDecoration =
         isInactive ? TextDecoration.lineThrough : TextDecoration.none;
+    final themeText =
+        (lesson.theme == null || lesson.theme!.trim().isEmpty)
+            ? 'Aucun sujet de leçon'
+            : lesson.theme!;
+    final isHomeworkEmpty =
+        (lesson.homework == null || lesson.homework!.trim().isEmpty);
+
+    Text(themeText, style: TextStyle(decoration: textDecoration));
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
-      color: theme.colorScheme.surface,
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Время + Class:
+            // Время + класс/room
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   _formatTime(lesson.date),
-                  style: textStyle?.copyWith(decoration: textDecoration),
+                  style: TextStyle(decoration: textDecoration),
                 ),
                 Text(
                   'Salle: ${lesson.room}',
-                  style: textStyle?.copyWith(decoration: textDecoration),
+                  style: TextStyle(decoration: textDecoration),
                 ),
                 Text(
                   'Classe: ${lesson.groupName}',
-                  style: textStyle?.copyWith(decoration: textDecoration),
+                  style: TextStyle(decoration: textDecoration),
                 ),
               ],
             ),
             const SizedBox(height: 4),
             Text(
-              '${lesson.groupName}, ${lesson.courseTitle}',
-              style: textStyle?.copyWith(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+              '${lesson.courseTitle}',
+              style: theme.textTheme.titleMedium?.copyWith(
                 decoration: textDecoration,
               ),
             ),
             const SizedBox(height: 4),
-            Text(
-              lesson.description ?? 'Aucun sujet de leçon',
-              style: textStyle?.copyWith(decoration: textDecoration),
-            ),
-            if (lesson.homework != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Text(
-                  lesson.homework!,
-                  style: textStyle?.copyWith(decoration: textDecoration),
-                ),
-              )
-            else
-              TextButton(
-                onPressed:
-                    isInactive
-                        ? null
-                        : () {
-                          // TODO: Открыть диалог для добавления homework
-                        },
-                child: const Text('Ajouter un devoir'),
+            Text(themeText, style: TextStyle(decoration: textDecoration)),
+            if (!isHomeworkEmpty) ...{
+              const SizedBox(height: 4),
+              Text(
+                lesson.homework!,
+                style: TextStyle(decoration: textDecoration),
               ),
+            } else if (!isInactive) ...[
+              const Divider(),
+              // Кнопка "Ajouter un devoir"
+              Center(
+                child: TextButton(
+                  onPressed: () async {
+                    // Открываем диалог на 2 поля: homework, description
+                    final updated = await _showHomeworkDialog(context);
+                    if (updated != null) {
+                      context.read<TeacherWeeklyScheduleBloc>().add(
+                        UpdateLessonInfoEvent(
+                          lessonId: lesson.lessonId,
+                          homework: updated['homework'],
+                          description: updated['description'],
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text('Ajouter un devoir'),
+                ),
+              ),
+            ],
           ],
         ),
       ),
     );
   }
 
+  Future<Map<String, String>?> _showHomeworkDialog(BuildContext context) async {
+    final homeworkCtrl = TextEditingController();
+    final descCtrl = TextEditingController();
+    return showDialog<Map<String, String>>(
+      context: context,
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Ajouter un devoir'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: homeworkCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Devoir (homework)',
+                  ),
+                ),
+                TextField(
+                  controller: descCtrl,
+                  decoration: const InputDecoration(labelText: 'Description'),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Annuler'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(ctx, {
+                    'homework': homeworkCtrl.text,
+                    'description': descCtrl.text,
+                  });
+                },
+                child: const Text('Confirmer'),
+              ),
+            ],
+          ),
+    );
+  }
+
   String _formatTime(DateTime dt) {
-    final hour = dt.hour.toString().padLeft(2, '0');
-    final minute = dt.minute.toString().padLeft(2, '0');
-    return '$hour:$minute';
+    final h = dt.hour.toString().padLeft(2, '0');
+    final m = dt.minute.toString().padLeft(2, '0');
+    return '$h:$m';
   }
 }

@@ -39,3 +39,18 @@ class UpdateLessonActivityEvent extends TeacherWeeklyScheduleEvent {
   @override
   List<Object?> get props => [lessonId];
 }
+
+/// Изменение информации (homework, description, theme, etc.)
+class UpdateLessonInfoEvent extends TeacherWeeklyScheduleEvent {
+  final int lessonId;
+  final String? theme;
+  final String? homework;
+  final String? description;
+
+  const UpdateLessonInfoEvent({
+    required this.lessonId,
+    this.theme,
+    this.homework,
+    this.description,
+  });
+}

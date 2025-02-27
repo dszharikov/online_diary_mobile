@@ -21,6 +21,7 @@ class TeacherWeeklyScheduleBloc
     on<SelectDayOfWeekEvent>(_onSelectDayOfWeekEvent);
     on<PreviousWeekEvent>(_onPreviousWeekEvent);
     on<NextWeekEvent>(_onNextWeekEvent);
+    on<UpdateLessonInfoEvent>(_onUpdateLessonInfoEvent);
     on<UpdateLessonActivityEvent>(_onUpdateLessonActivityEvent);
   }
 
@@ -60,6 +61,50 @@ class TeacherWeeklyScheduleBloc
       );
     } catch (e) {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+    }
+  }
+
+  Future<void> _onUpdateLessonInfoEvent(
+    UpdateLessonInfoEvent event,
+    Emitter<TeacherWeeklyScheduleState> emit,
+  ) async {
+    emit(state.copyWith(isUpdatingLesson: true));
+    try {
+      final currentDayLessons =
+          state.weeklyLessons[state.selectedDayIndex] ?? [];
+      final lesson = currentDayLessons.firstWhere(
+        (l) => l.lessonId == event.lessonId,
+      );
+
+      final result = await repository.updateLesson(
+        lessonId: lesson.lessonId,
+        isActive: lesson.isActive,
+        homework: event.homework,
+        description: event.description,
+        theme: event.theme,
+      );
+
+      if (!result) {
+        emit(state.copyWith(isUpdatingLesson: false));
+        return;
+      }
+
+      final updatedLesson = lesson.copyWith(homework: event.homework, description: event.description, theme: event.theme);
+
+      final updatedList =
+          currentDayLessons.map((l) {
+            if (l.lessonId == event.lessonId) {
+              return updatedLesson;
+            }
+            return l;
+          }).toList();
+
+      final newMap = Map<int, List<LessonModel>>.from(state.weeklyLessons);
+      newMap[state.selectedDayIndex] = updatedList;
+
+      emit(state.copyWith(isUpdatingLesson: false, weeklyLessons: newMap));
+    } catch (e) {
+      emit(state.copyWith(isUpdatingLesson: false, errorMessage: e.toString()));
     }
   }
 
