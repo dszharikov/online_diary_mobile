@@ -1,6 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:online_diary_mobile/features/common/login/login.dart';
+import 'package:online_diary_mobile/features/teacher/weekly_schedule/bloc/teacher_weekly_schedule_bloc.dart';
+import 'package:online_diary_mobile/features/teacher/weekly_schedule/data/sources/teacher_weekly_schedule_remote_data_source.dart';
+import 'package:online_diary_mobile/features/teacher/weekly_schedule/repositories/teacher_weekly_schedule_repository.dart';
+import 'package:online_diary_mobile/features/teacher/weekly_schedule/repositories/teacher_weekly_schedule_repository_impl.dart';
 import 'core/local/local.dart';
 import 'core/networking/networking.dart';
 import 'features/common/auth/auth.dart';
@@ -45,6 +49,10 @@ void _remoteDataSources() {
   sl.registerLazySingleton<LoginRemoteDataSource>(
     () => LoginRemoteDataSource(api: sl()),
   );
+
+  sl.registerLazySingleton<TeacherWeeklyScheduleRemoteDataSource>(
+    () => TeacherWeeklyScheduleRemoteDataSourceImpl(api: sl()),
+  );
 }
 
 void _localDataSources() {
@@ -69,6 +77,10 @@ void _repositories(RefreshTokenInterceptor refreshTokenInterceptor) {
   sl.registerLazySingleton<SettingsRepository>(
     () => SettingsRepositoryImpl(localDataSource: sl()),
   );
+
+  sl.registerLazySingleton<TeacherWeeklyScheduleRepository>(
+    () => TeacherWeeklyScheduleRepositoryImpl(remoteDataSource: sl()),
+  );
 }
 
 void _useCases() {}
@@ -80,5 +92,9 @@ void _bloc() {
   );
   sl.registerFactory<SettingsBloc>(
     () => SettingsBloc(settingsRepository: sl()),
+  );
+
+  sl.registerFactory<TeacherWeeklyScheduleBloc>(
+    () => TeacherWeeklyScheduleBloc(repository: sl()),
   );
 }

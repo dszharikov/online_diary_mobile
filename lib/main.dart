@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:online_diary_mobile/router/router.dart';
 
 import 'package:online_diary_mobile/service_locator.dart' as di;
 import 'package:online_diary_mobile/service_locator.dart';
@@ -57,10 +58,12 @@ class MyApp extends StatelessWidget {
     final ThemeData myLightTheme = myMaterialTheme.light();
     final ThemeData myDarkTheme = myMaterialTheme.dark();
 
+    final _appRouter = AppRouter();
+
     // 3. Слушаем SettingsBloc, чтобы установить тему
     return BlocBuilder<SettingsBloc, SettingsState>(
       builder: (context, settingsState) {
-        return MaterialApp(
+        return MaterialApp.router(
           title: 'Online Diary',
 
           // 3.1 Настраиваем локализацию
@@ -68,29 +71,18 @@ class MyApp extends StatelessWidget {
           supportedLocales: context.supportedLocales,
           locale: context.locale,
 
-          // Начальный маршрут (может быть '/splash', '/login' и т.д.)
-          initialRoute: '/splash',
-
-          // Словарь именованных маршрутов
-          routes: {
-            '/splash': (context) => const SplashPage(),
-            '/login': (context) => const LoginPage(),
-            '/student/home': (context) => const StudentMainPage(),
-            '/teacher/home': (context) => const TeacherMainPage(),
-            '/director/home': (context) => const DirectorMainPage(),
-            // Можно добавить и другие...
-          },
+          routerConfig: _appRouter.config(),
 
           // 3.2 Темы
           theme: myLightTheme,
           darkTheme: myDarkTheme,
           themeMode:
+              // TODO: make default as system
               settingsState.isDarkMode ? ThemeMode.dark : ThemeMode.light,
 
           // 4. Организуем навигацию:
           //    - Начальный экран: SplashPage
           //    - Затем в BlocListener<AuthBloc> (ниже) обрабатываем переходы
-          home: SplashPage(),
         );
       },
     );

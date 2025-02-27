@@ -47,6 +47,8 @@ class ApiInterceptor extends Interceptor {
         });
       }
 
+      print(await keyValueStorageService.getAccessToken());
+
       options.extra.remove('requiresAuthToken');
     }
     return handler.next(options);

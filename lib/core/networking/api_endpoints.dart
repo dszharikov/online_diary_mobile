@@ -37,6 +37,20 @@ class ApiEndpoint {
         return '$baseUrl/schools/get-all';
     }
   }
+
+  static String teacherSchedule(TeacherSchedule endpoint) {
+    switch (endpoint) {
+      case TeacherSchedule.GET_WEEKLY_SCHEDULE:
+        return '$baseUrl/teacher/journal/schedule/get';
+    }
+  }
+
+  static String teacherLesson(TeacherLesson endpoint, {int? lessonId}) {
+    switch (endpoint) {
+      case TeacherLesson.UPDATE_LESSON:
+        return '$baseUrl/teacher/journal/schedule/update_lesson/$lessonId';
+    }
+  }
 }
 
 /// A collection of endpoints used for authentication purposes.
@@ -46,3 +60,11 @@ enum AuthEndpoint {
 }
 
 enum SchoolsEndpoint { GET_ALL }
+
+enum TeacherSchedule {
+  GET_WEEKLY_SCHEDULE, // list of lessons for a week
+}
+
+enum TeacherLesson {
+  UPDATE_LESSON, // update lesson
+}

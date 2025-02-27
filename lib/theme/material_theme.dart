@@ -369,6 +369,14 @@ class MaterialTheme {
     ),
     scaffoldBackgroundColor: colorScheme.background,
     canvasColor: colorScheme.surface,
+    // ВАЖНО: Настраиваем bottomNavigationBarTheme
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      selectedItemColor: colorScheme.primary,
+      unselectedItemColor: colorScheme.onSurfaceVariant,
+      selectedLabelStyle: TextStyle(color: colorScheme.primary),
+      unselectedLabelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+      backgroundColor: colorScheme.surface,
+    ),
   );
 
   List<ExtendedColor> get extendedColors => [];

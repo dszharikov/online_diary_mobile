@@ -1,9 +1,11 @@
 // director_main_page.dart
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../common/auth/auth.dart';
 
+@RoutePage()
 class DirectorMainPage extends StatelessWidget {
   const DirectorMainPage({super.key});
 
@@ -12,11 +14,7 @@ class DirectorMainPage extends StatelessWidget {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is Unauthenticated) {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            '/login',
-            (route) => false,
-          );
+          context.router.replacePath('/login');
         }
       },
       child: Scaffold(
