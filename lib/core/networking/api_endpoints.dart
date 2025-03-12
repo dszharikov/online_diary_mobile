@@ -21,7 +21,8 @@ class ApiEndpoint {
   /// ```
   /// flutter run --dart-define=BASE_URL=www.some_url.com
   /// ```
-  static const baseUrl = 'https://dev-api.tilmidi.ma/api/v2';
+  // static const baseUrl = 'https://dev-api.tilmidi.ma/api/v2';
+  static const baseUrl = 'http://194.147.34.4:7000/api/v2';
 
   /// Returns the path for an authentication [endpoint].
   static String auth(AuthEndpoint endpoint) {
@@ -34,7 +35,8 @@ class ApiEndpoint {
   static String schools(SchoolsEndpoint endpoint) {
     switch (endpoint) {
       case SchoolsEndpoint.GET_ALL:
-        return '$baseUrl/schools/get-all';
+        return 'http://194.147.34.4:7000/api/v3/schools/get-all';
+      // TODO: change to $baseUrl/schools/get-all
     }
   }
 

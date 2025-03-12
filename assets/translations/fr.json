@@ -1,3 +1,41 @@
 {
-  "title": "Page d'accueil"
+  "title": "Page d'accueil",
+  "common": {
+    "yes": "Oui",
+    "no": "Non",
+    "cancel": "Annuler",
+    "confirm": "Confirmer"
+  },
+  "teacherWeeklySchedule": {
+    "title": "WeeklySchedule",
+    "actionCancel": "Annuler",
+    "actionRestore": "Rétablir",
+    "actionEdit": "Modifier",
+    "confirmCancelTitle": "Annuler ce cours?",
+    "confirmCancelMessage": "Voulez-vous vraiment annuler ce cours?",
+    "confirmRestoreTitle": "Rétablir ce cours?",
+    "confirmRestoreMessage": "Voulez-vous vraiment rétablir ce cours?",
+    "dialogEditTitle": "Modifier le cours",
+    "fieldTheme": "Thème",
+    "fieldHomework": "Devoir",
+    "fieldDescription": "Description",
+    "room": "Salle",
+    "group": "Classe",
+    "noLessonTheme": "Aucun sujet de leçon",
+    "addHomework": "Ajouter un devoir",
+    "dialogAddHomeworkTitle": "Ajouter un devoir"
+  },
+  "login": {
+    "title": "Tilmidi",
+    "select_school": "Choisir l'école",
+    "unknown_school": "Inconnue",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "forgot_password": "Mot de passe oublié ?",
+    "connect": "Connexion",
+    "locked": "Veuillez attendre {seconds} secondes avant un nouvel essai",
+    "forgot_password_dialog_title": "Mot de passe oublié ?",
+    "forgot_password_dialog_message": "Veuillez demander vos identifiants auprès de votre directeur.",
+    "ok_button": "Ok"
+  }
 }

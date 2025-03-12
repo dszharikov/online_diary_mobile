@@ -12,6 +12,7 @@ class LoginRepository {
     try {
       // Получаем данные с сервера
       final schools = await remoteDataSource.getSchools();
+      schools.sort((a, b) => a.name!.compareTo(b.name!));
 
       return Right(schools);
     } catch (e) {

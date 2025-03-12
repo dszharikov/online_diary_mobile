@@ -20,7 +20,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc({required this.loginRepository, required this.authRepository})
     : super(const LoginState()) {
     on<FetchSchoolsEvent>(_onFetchSchools);
-    on<SchoolSelectedEvent>(_onSchoolSelected);
+    on<SchoolNameChangedEvent>(_onSchoolNameChanged);
     on<UsernameChangedEvent>(_onUsernameChanged);
     on<PasswordChangedEvent>(_onPasswordChanged);
     on<SubmitLoginEvent>(_onSubmitLogin);
@@ -57,8 +57,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
   }
 
-  void _onSchoolSelected(SchoolSelectedEvent event, Emitter<LoginState> emit) {
-    emit(state.copyWith(selectedSchoolId: event.schoolId));
+  void _onSchoolNameChanged(
+    SchoolNameChangedEvent event,
+    Emitter<LoginState> emit,
+  ) {
+    emit(state.copyWith(selectedSchoolName: event.schoolName));
   }
 
   void _onUsernameChanged(
@@ -86,12 +89,17 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
 
     // 2) Проверить валидацию полей (школа, username, password)
-    // if (state.selectedSchoolId == null || state.selectedSchoolId!.isEmpty) {
-    //   emit(state.copyWith(errorMessage: 'School not selected'));
-    //   return;
-    // }
+    // schools check if the selected school is in the list
+    var schoolSelected =
+        state.schools
+            .where((element) => element.name == state.selectedSchoolName)
+            .firstOrNull;
+    if (schoolSelected == null) {
+      emit(state.copyWith(errorMessage: 'School not selected'));
+      return;
+    }
     // TODO: Uncomment the above code and remove the below code
-    var schoolId = '01JFQ1RPZRD46S3S4XY5KE7EM2';
+    // var schoolId = '01JFQ1RPZRD46S3S4XY5KE7EM2';
     if (state.username.isEmpty) {
       emit(state.copyWith(errorMessage: 'Username is empty'));
       return;
@@ -104,8 +112,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(state.copyWith(isLoading: true, errorMessage: null));
     // 3) Отправляем запрос на логин
     final result = await authRepository.logIn(
-      // schoolId: state.selectedSchoolId!,
-      schoolId: schoolId,
+      schoolId: schoolSelected.id!,
+      // schoolId: schoolId,
       username: state.username,
       password: state.password,
     );

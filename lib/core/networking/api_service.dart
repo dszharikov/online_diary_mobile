@@ -52,7 +52,7 @@ class ApiService implements ApiInterface {
   }) async {
     try {
       // Entire map of response
-      final data = await _dioService.get<List<Object?>>(
+      final data = await _dioService.getList(
         endpoint: endpoint,
         // cacheOptions: _dioService.globalCacheOptions?.copyWith(
         //   policy: cachePolicy,
@@ -67,6 +67,9 @@ class ApiService implements ApiInterface {
         cancelToken: cancelToken,
       );
 
+      if (data == null) {
+        throw CustomException(message: 'No data received');
+      }
       // Items of table as json
       return data.map((dataMap) => converter(dataMap! as JSON)).toList();
     } on Exception catch (ex) {

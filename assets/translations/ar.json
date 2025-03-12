@@ -1,3 +1,41 @@
 {
-  "title": "الصفحة الرئيسية"
+  "title": "الصفحة الرئيسية",
+  "common": {
+    "yes": "نعم",
+    "no": "لا",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد"
+  },
+  "teacherWeeklySchedule": {
+    "title": "الجدول الأسبوعي",
+    "actionCancel": "إلغاء الدرس",
+    "actionRestore": "استعادة الدرس",
+    "actionEdit": "تعديل",
+    "confirmCancelTitle": "إلغاء هذا الدرس؟",
+    "confirmCancelMessage": "هل تريد حقًا إلغاء هذا الدرس؟",
+    "confirmRestoreTitle": "استعادة هذا الدرس؟",
+    "confirmRestoreMessage": "هل تريد حقًا استعادة هذا الدرس؟",
+    "dialogEditTitle": "تعديل الدرس",
+    "fieldTheme": "موضوع الدرس",
+    "fieldHomework": "الواجب",
+    "fieldDescription": "وصف",
+    "room": "قاعة",
+    "group": "فصل",
+    "noLessonTheme": "لا يوجد موضوع للدرس",
+    "addHomework": "إضافة واجب",
+    "dialogAddHomeworkTitle": "إضافة واجب"
+  },
+  "login": {
+    "title": "Tilmidi",
+    "select_school": "اختر المدرسة",
+    "unknown_school": "مدرسة غير معروفة",
+    "username": "اسم المستخدم",
+    "password": "كلمة المرور",
+    "forgot_password": "نسيت كلمة المرور؟",
+    "connect": "دخول",
+    "locked": "الرجاء الانتظار {seconds} ثانية قبل المحاولة مرة أخرى",
+    "forgot_password_dialog_title": "هل نسيت كلمة المرور؟",
+    "forgot_password_dialog_message": "يرجى طلب معلومات تسجيل الدخول من مدير مدرستك",
+    "ok_button": "حسناً"
+  }
 }

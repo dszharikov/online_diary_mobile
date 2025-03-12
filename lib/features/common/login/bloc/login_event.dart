@@ -11,13 +11,13 @@ abstract class LoginEvent extends Equatable {
 class FetchSchoolsEvent extends LoginEvent {}
 
 /// Пользователь выбрал школу из dropdown
-class SchoolSelectedEvent extends LoginEvent {
-  final String schoolId; // или int, в зависимости от сервера
+class SchoolNameChangedEvent extends LoginEvent {
+  final String schoolName; // или int, в зависимости от сервера
 
-  const SchoolSelectedEvent(this.schoolId);
+  const SchoolNameChangedEvent(this.schoolName);
 
   @override
-  List<Object?> get props => [schoolId];
+  List<Object?> get props => [schoolName];
 }
 
 /// При вводе username/password
@@ -41,7 +41,6 @@ class PasswordChangedEvent extends LoginEvent {
 
 /// Клик на кнопку Login
 class SubmitLoginEvent extends LoginEvent {}
-
 
 /// Тик таймера блокировки (раз в секунду или как удобнее)
 class LockTimerTickedEvent extends LoginEvent {

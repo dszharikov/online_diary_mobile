@@ -86,6 +86,28 @@ class DioService {
     return response.data as R;
   }
 
+  // get list of objects
+  Future<List<Object?>?> getList({
+    required String endpoint,
+    JSON? queryParams,
+    Options? options,
+    // CacheOptions? cacheOptions,
+    CancelToken? cancelToken,
+  }) async {
+    final response = await _dio.get<List<Object?>>(
+      // JSON
+      endpoint,
+      queryParameters: queryParams,
+      options: options,
+      // options: _mergeDioAndCacheOptions(
+      //   dioOptions: options,
+      //   cacheOptions: cacheOptions,
+      // ),
+      cancelToken: cancelToken ?? _cancelToken,
+    );
+    return response.data;
+  }
+
   /// This method sends a `POST` request to the [endpoint], **decodes**
   /// the response and returns a parsed [ResponseModel] with a body of type [R].
   ///

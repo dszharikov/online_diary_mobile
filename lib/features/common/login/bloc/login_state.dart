@@ -3,7 +3,7 @@ part of 'login_bloc.dart';
 class LoginState extends Equatable {
   final bool isLoading; // Показывает, идёт ли загрузка
   final List<School> schools; // Список школ
-  final String? selectedSchoolId; // ID выбранной школы
+  final String? selectedSchoolName; // ID выбранной школы
   final String username;
   final String password;
   final String? errorMessage; // Для отображения ошибок
@@ -16,7 +16,7 @@ class LoginState extends Equatable {
   const LoginState({
     this.isLoading = false,
     this.schools = const [],
-    this.selectedSchoolId,
+    this.selectedSchoolName,
     this.username = '',
     this.password = '',
     this.errorMessage,
@@ -28,7 +28,7 @@ class LoginState extends Equatable {
   LoginState copyWith({
     bool? isLoading,
     List<School>? schools,
-    String? selectedSchoolId,
+    String? selectedSchoolName,
     String? username,
     String? password,
     String? errorMessage,
@@ -39,7 +39,7 @@ class LoginState extends Equatable {
     return LoginState(
       isLoading: isLoading ?? this.isLoading,
       schools: schools ?? this.schools,
-      selectedSchoolId: selectedSchoolId ?? this.selectedSchoolId,
+      selectedSchoolName: selectedSchoolName ?? this.selectedSchoolName,
       username: username ?? this.username,
       password: password ?? this.password,
       errorMessage: errorMessage,
@@ -53,7 +53,7 @@ class LoginState extends Equatable {
   List<Object?> get props => [
     isLoading,
     schools,
-    selectedSchoolId,
+    selectedSchoolName,
     username,
     password,
     errorMessage,
